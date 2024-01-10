@@ -1,52 +1,54 @@
-// Research for libraries
+// Import necessary modules
 import fs from 'fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
+// Define the website URL and the folder where images will be saved
 const websiteUrl = 'https://memegen-link-examples-upleveled.netlify.app/';
 const memeFolder = './memes';
 
-//  Connect to the current version of the website
-async function scrapeMemes() {
-  try {
-    const response = await axios.get(websiteUrl);
-    const $ = cheerio.load(response.data);
+// Function to scrape memes
+function scrapeMemes() {
+  // Make a GET request to the website
+  return (
+    axios
+      .get(websiteUrl)
+      .then((response) => {
+        // Load the HTML content into Cheerio
+        const $ = cheerio.load(response.data);
 
-    // Iterate through the first 10 images
-    for (let i = 0; i < 10; i++) {
-      const imgUrl = $('img').eq(i).attr('src');
-      const imgName = `${(i + 1).toString().padStart(2, '0')}.jpg`;
-      const imgPath = `${memeFolder}/${imgName}`;
+        // Iterate through the first 10 images
+        for (let i = 0; i < 10; i++) {
+          // Get the URL of the current image
+          const imgUrl = $('img').eq(i).attr('src');
 
-      // Download the image
-      axios({
-        method: 'get',
-        url: imgUrl,
-        responseType: 'stream',
-      }).then((response_1) => {
-        response_1.data.pipe(fs.createWriteStream(imgPath));
-        console.log(`Downloaded ${imgName}`);
-      });
-    }
+          // Generate a filename for the image
+          const imgName = `${(i + 1).toString().padStart(2, '0')}.jpg`;
 
-    console.log('Scraping successful.');
-  } catch (error) {
-    return console.error('Error:', error.message);
-  }
+          // Generate the full path where the image will be saved
+          const imgPath = `${memeFolder}/${imgName}`;
+
+          // Download the image
+          axios({
+            method: 'get',
+            url: imgUrl,
+            responseType: 'stream',
+          }).then((response) => {
+            // Pipe the image data to a writable stream
+            response.data.pipe(fs.createWriteStream(imgPath));
+
+            // Log success message
+            console.log(`Downloaded ${imgName}`);
+          });
+        }
+
+        // Log success message after scraping all images
+        console.log('Scraping successful.');
+      })
+      // Handle errors
+      .catch((error) => console.error('Error:', error.message))
+  );
 }
 
+// Call the function to start scraping
 scrapeMemes();
-
-//  Avoid any caching?
-//  Download HTML string from the website and save in a variable
-//  Search inside HTML string for <img src="..." /> and extract to array of URLs (strings)
-//  Maybe inside of the <section id="images">?
-//  Extract first 10 URLs from array
-//  Loop over array of first 10 URLs and:
-//  Download the image data (string)
-//  Generate path in the "memes" folder (eg. ./memes/03.jpg)
-//  1-10
-//  double digits
-//  .jpg
-//  Create an empty file with the path
-//  Put the image data into the file
