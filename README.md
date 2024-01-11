@@ -1,1 +1,3 @@
 # NODE JS MEME SCRAPER
+
+Boris Djuric
