@@ -1,5 +1,5 @@
-// Import necessary modules
-import fs from 'fs';
+// Import necessary libraries
+import fs from 'node:fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
@@ -9,7 +9,6 @@ const memeFolder = './memes';
 
 // Function to scrape memes
 function scrapeMemes() {
-  // Make a GET request to the website
   return (
     axios
       .get(websiteUrl)
@@ -17,7 +16,7 @@ function scrapeMemes() {
         // Load the HTML content into Cheerio
         const $ = cheerio.load(response.data);
 
-        // Iterate through the first 10 images
+        // Run through the first 10 images
         for (let i = 0; i < 10; i++) {
           // Get the URL of the current image
           const imgUrl = $('img').eq(i).attr('src');
@@ -34,7 +33,6 @@ function scrapeMemes() {
             url: imgUrl,
             responseType: 'stream',
           }).then((response) => {
-            // Pipe the image data to a writable stream
             response.data.pipe(fs.createWriteStream(imgPath));
 
             // Log success message
@@ -45,10 +43,10 @@ function scrapeMemes() {
         // Log success message after scraping all images
         console.log('Scraping successful.');
       })
-      // Handle errors
-      .catch((error) => console.error('Error:', error.message))
+      // Error Message
+      .catch((error) => console.log('Error:', error.message))
   );
 }
 
-// Call the function to start scraping
+// Calling the function to start scraping
 scrapeMemes();
