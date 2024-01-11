@@ -2,7 +2,6 @@
 import fs from 'node:fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-// import https from 'node:https';
 
 // Define the website URL and the folder where images will be saved
 const websiteUrl = 'https://memegen-link-examples-upleveled.netlify.app/';
